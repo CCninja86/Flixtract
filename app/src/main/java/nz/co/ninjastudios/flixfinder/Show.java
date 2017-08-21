@@ -1,77 +1,67 @@
 package nz.co.ninjastudios.flixfinder;
 
-import java.util.ArrayList;
-
 /**
  * Created by james on 21/08/2017.
  */
 
 public class Show {
-    private String title;
-    private String description;
-    private String recommendedCountry;
-    private ArrayList<String> tags;
-    private int year;
-    private ArrayList<Country> countries;
-    private int rating;
+
+    private int id;
+    private Genre[] genres;
+    private String overview;
+    private String poster_path;
+    private double vote_average;
+    private int vote_count;
 
     public Show(){
 
     }
 
-    protected String getTitle() {
-        return title;
+    protected int getId() {
+        return id;
     }
 
-    protected void setTitle(String title) {
-        this.title = title;
+    protected void setId(int id) {
+        this.id = id;
     }
 
-    protected String getDescription() {
-        return description;
+    protected Genre[] getGenres() {
+        return genres;
     }
 
-    protected void setDescription(String description) {
-        this.description = description;
+    protected void setGenres(Genre[] genres) {
+        this.genres = genres;
     }
 
-    protected String getRecommendedCountry() {
-        return recommendedCountry;
+    protected String getOverview() {
+        return overview;
     }
 
-    protected void setRecommendedCountry(String recommendedCountry) {
-        this.recommendedCountry = recommendedCountry;
+    protected void setOverview(String overview) {
+        this.overview = overview;
     }
 
-    protected ArrayList<String> getTags() {
-        return tags;
+    protected String getPoster_path() {
+        return poster_path;
     }
 
-    protected void setTags(ArrayList<String> tags) {
-        this.tags = tags;
+    protected void setPoster_path(String poster_path) {
+        this.poster_path = poster_path;
     }
 
-    protected int getYear() {
-        return year;
+    protected double getVote_average() {
+        return vote_average;
     }
 
-    protected void setYear(int year) {
-        this.year = year;
+    protected void setVote_average(double vote_average) {
+        this.vote_average = vote_average;
     }
 
-    protected ArrayList<Country> getCountries() {
-        return countries;
+    protected int getVote_count() {
+        return vote_count;
     }
 
-    protected void setCountries(ArrayList<Country> countries) {
-        this.countries = countries;
-    }
-
-    protected int getRating() {
-        return rating;
-    }
-
-    protected void setRating(int rating) {
-        this.rating = rating;
+    protected void setVote_count(int vote_count) {
+        this.vote_count = vote_count;
     }
 }
