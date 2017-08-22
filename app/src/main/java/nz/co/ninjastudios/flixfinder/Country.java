@@ -2,13 +2,15 @@ package nz.co.ninjastudios.flixfinder;
 
 import android.graphics.Bitmap;
 
+import java.io.Serializable;
+
 /**
  * Created by james on 21/08/2017.
  */
 
-public class Country {
+public class Country implements Serializable {
     private String name;
-    private Bitmap flag;
+    private String flagImageUrl;
 
     public String getName() {
         return name;
@@ -18,11 +20,11 @@ public class Country {
         this.name = name;
     }
 
-    public Bitmap getFlag() {
-        return flag;
+    public String getFlagImageUrl() {
+        return flagImageUrl;
     }
 
-    public void setFlag(Bitmap flag) {
-        this.flag = flag;
+    public void setFlagImageUrl(String url) {
+        this.flagImageUrl = url;
     }
 }

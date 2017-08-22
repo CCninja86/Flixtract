@@ -23,6 +23,8 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -42,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 String searchTerm = editText.getText().toString();
-                new SearchShowsTask(searchTerm).execute();
+                new SearchNetflixShowsTask(searchTerm).execute();
             }
         });
     }
@@ -50,12 +52,12 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private class SearchShowsTask extends AsyncTask<Void, Void, Void> {
+    private class SearchNetflixShowsTask extends AsyncTask<Void, Void, Void> {
 
         private String searchTerm;
-        private ArrayList<String> results;
+        private ArrayList<Show> results;
 
-        public SearchShowsTask(String searchTerm){
+        public SearchNetflixShowsTask(String searchTerm){
             this.searchTerm = searchTerm;
             this.results = new ArrayList<>();
         }
@@ -81,12 +83,82 @@ public class MainActivity extends AppCompatActivity {
             if(document != null){
                 Elements showCards = document.getElementsByClass("card movie-card text-xs-center");
 
+                String showTitle = "";
+                int year = 0;
+
                 for(Element showCard : showCards){
+                    ArrayList<Country> countries = new ArrayList<>();
                     Elements titleElement = showCard.getElementsByTag("a");
+                    Elements availableCountries = showCard.children().get(1).children();
+
+                    for(Element availCountry : availableCountries){
+                        if(!availCountry.hasClass("fa fa-plus")){
+                            Element flagElement = availCountry.child(0);
+                            Country country = new Country();
+
+                            if(flagElement.hasAttr("title")){
+                                country.setName(flagElement.attr("title"));
+                            }
+
+                            if(flagElement.hasAttr("src")){
+                                country.setFlagImageUrl("http://flixsearch.io" + flagElement.attr("src"));
+                            }
+
+                            countries.add(country);
+                        } else {
+                            if(availCountry.hasAttr("title")){
+                                String[] countryList = availCountry.attr("title").split(", ");
+
+                                for(String countryName : countryList){
+                                    Country country = new Country();
+                                    country.setName(countryName);
+                                    country.setFlagImageUrl(null);
+                                    countries.add(country);
+                                }
+                            }
+                        }
+
+                    }
 
                     if(titleElement.hasAttr("title")){
-                        String showTitle = titleElement.attr("title");
-                        results.add(showTitle);
+                        showTitle = titleElement.attr("title");
+                    }
+
+                    if(titleElement.hasAttr("href")){
+                        urlString = titleElement.attr("href");
+                        Document documentDetails = null;
+
+                        try {
+                            documentDetails = Jsoup.connect(urlString).get();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        if(documentDetails != null){
+                            Elements yearElements = documentDetails.select("small");
+                            Elements leadElements = documentDetails.getElementsByClass("lead");
+                            Element showTypeElement = null;
+                            Show show = null;
+
+                            for(Element element : leadElements){
+                                if(element.text().contains("movie")){
+                                    show = new Movie();
+                                    break;
+                                } else if(element.text().contains("TV show")){
+                                    show = new TVShow();
+                                    break;
+                                }
+                            }
+
+
+                            String yearString = yearElements.get(0).text();
+                            year = Integer.parseInt(yearString.substring(1, yearString.length() - 1));
+                            show.setTitle(showTitle);
+                            show.setYear(year);
+                            show.setCountries(countries);
+
+                            results.add(show);
+                        }
                     }
                 }
             }
@@ -101,9 +173,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void launchResultsActivity(ArrayList<String> results){
+    private void launchResultsActivity(ArrayList<Show> shows){
         Intent intent = new Intent(getApplicationContext(), ResultListActivity.class);
-        intent.putStringArrayListExtra("results", results);
+        intent.putExtra("shows", shows);
         startActivity(intent);
     }
 }

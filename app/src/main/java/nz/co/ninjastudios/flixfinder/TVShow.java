@@ -9,11 +9,9 @@ import java.util.ArrayList;
 public class TVShow extends Show {
 
     private int[] episode_run_time;
-    private String first_air_date;
     private boolean in_production;
     private String[] languages;
     private String last_air_date;
-    private String name;
     private int number_of_episodes;
     private int number_of_seasons;
     private Season[] seasons;
@@ -30,12 +28,20 @@ public class TVShow extends Show {
         this.episode_run_time = episode_run_time;
     }
 
-    public String getFirst_air_date() {
-        return first_air_date;
+    public String getRelease_date() {
+        return super.getRelease_date();
     }
 
-    public void setFirst_air_date(String first_air_date) {
-        this.first_air_date = first_air_date;
+    public void setRelease_date(String release_date) {
+        super.setRelease_date(release_date);
+    }
+
+    public int getYear(){
+        return super.getYear();
+    }
+
+    public void setYear(int year){
+        super.setYear(year);
     }
 
     public Genre[] getGenres() {
@@ -78,12 +84,12 @@ public class TVShow extends Show {
         this.last_air_date = last_air_date;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return super.getTitle();
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        super.setTitle(title);
     }
 
     public int getNumber_of_episodes() {

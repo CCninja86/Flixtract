@@ -8,10 +8,8 @@ public class Movie extends Show {
 
     private boolean adult;
     private int budget;
-    private String release_date;
     private int revenue;
     private int runtime;
-    private String title;
 
     public Movie(){
 
@@ -66,11 +64,19 @@ public class Movie extends Show {
     }
 
     public String getRelease_date() {
-        return release_date;
+        return super.getRelease_date();
     }
 
     public void setRelease_date(String release_date) {
-        this.release_date = release_date;
+        super.setRelease_date(release_date);
+    }
+
+    public int getYear(){
+        return super.getYear();
+    }
+
+    public void setYear(int year){
+        super.setYear(year);
     }
 
     public int getRevenue() {
@@ -90,11 +96,11 @@ public class Movie extends Show {
     }
 
     public String getTitle() {
-        return title;
+        return super.getTitle();
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        super.setTitle(title);
     }
 
     public double getVote_average() {

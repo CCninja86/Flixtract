@@ -9,23 +9,28 @@ import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import static java.security.AccessController.getContext;
 
 /**
  * Created by James on 30/11/2015.
  */
-public class ListViewAdapter extends ArrayAdapter<String> {
+public class ListViewAdapter extends BaseAdapter {
 
-    private ArrayList<String> items;
+    private ArrayList<Show> items;
     private  ArrayList<Integer> selectedItems;
     private int layout;
 
-    public ListViewAdapter(Activity context, ArrayList<String> items, int layout){
-        super(context, layout, items);
+    public ListViewAdapter(Activity context, ArrayList<Show> items, int layout){
         this.layout = layout;
         this.items = items;
         this.selectedItems = new ArrayList<>();
@@ -49,7 +54,7 @@ public class ListViewAdapter extends ArrayAdapter<String> {
     }
 
     @Override
-    public String getItem(int position){
+    public Show getItem(int position){
         return items.get(position);
     }
 
@@ -62,17 +67,17 @@ public class ListViewAdapter extends ArrayAdapter<String> {
     public View getView(int position, View convertView, ViewGroup parent){
 
         if(convertView == null){
-            LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            LayoutInflater inflater = (LayoutInflater) parent.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(layout, null);
         }
 
-        String word = items.get(position);
-
-        if(word != null){
+        String title = items.get(position).getTitle();
+        int year = items.get(position).getYear();
+        if(title != null){
             TextView textView = (TextView) convertView.findViewById(R.id.textViewItem);
 
             if(textView != null){
-                textView.setText(word);
+                textView.setText(title + " (" + year + ")");
             }
         }
 

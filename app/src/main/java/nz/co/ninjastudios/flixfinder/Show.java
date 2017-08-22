@@ -1,10 +1,13 @@
 package nz.co.ninjastudios.flixfinder;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+
 /**
  * Created by james on 21/08/2017.
  */
 
-public class Show {
+public abstract class Show implements Serializable {
 
     private int id;
     private Genre[] genres;
@@ -12,6 +15,11 @@ public class Show {
     private String poster_path;
     private double vote_average;
     private int vote_count;
+    private String status;
+    private String title;
+    private String release_date;
+    private int year;
+    private ArrayList<Country> countries;
 
     public Show(){
 
@@ -63,5 +71,45 @@ public class Show {
 
     protected void setVote_count(int vote_count) {
         this.vote_count = vote_count;
+    }
+
+    protected String getStatus() {
+        return status;
+    }
+
+    protected void setStatus(String status) {
+        this.status = status;
+    }
+
+    protected String getTitle() {
+        return title;
+    }
+
+    protected void setTitle(String title) {
+        this.title = title;
+    }
+
+    protected String getRelease_date() {
+        return release_date;
+    }
+
+    protected void setRelease_date(String release_date) {
+        this.release_date = release_date;
+    }
+
+    protected int getYear() {
+        return year;
+    }
+
+    protected void setYear(int year) {
+        this.year = year;
+    }
+
+    protected ArrayList<Country> getCountries() {
+        return countries;
+    }
+
+    protected void setCountries(ArrayList<Country> countries) {
+        this.countries = countries;
     }
 }

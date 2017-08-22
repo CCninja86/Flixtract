@@ -16,7 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ResultListActivity"></activity>
+        <activity android:name=".ResultListActivity" />
+        <activity android:name=".PrimaryShowDetailsActivity" />
+        <activity android:name=".SeasonsActivity" />
+        <activity android:name=".EpisodesActivity" />
+        <activity android:name=".EpisodeDetailsActivity"></activity>
     </application>
 
 </manifest>

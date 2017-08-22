@@ -1,10 +1,12 @@
 package nz.co.ninjastudios.flixfinder;
 
+import java.io.Serializable;
+
 /**
  * Created by james on 21/08/2017.
  */
 
-public class Genre {
+public class Genre implements Serializable {
 
     private int id;
     private String name;
