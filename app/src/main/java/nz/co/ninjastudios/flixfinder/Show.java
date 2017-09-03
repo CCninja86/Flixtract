@@ -20,6 +20,7 @@ public abstract class Show implements Serializable {
     private String release_date;
     private int year;
     private ArrayList<Country> countries;
+    private boolean isOnNetflix;
 
     public Show(){
 
@@ -111,5 +112,13 @@ public abstract class Show implements Serializable {
 
     protected void setCountries(ArrayList<Country> countries) {
         this.countries = countries;
+    }
+
+    protected boolean isOnNetflix() {
+        return isOnNetflix;
+    }
+
+    protected void setOnNetflix(boolean onNetflix) {
+        isOnNetflix = onNetflix;
     }
 }

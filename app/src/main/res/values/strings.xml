@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Flix Finder</string>
+    <string-array name="show_types">
+        <item>--Select Show Type--</item>
+        <item>Movie</item>
+        <item>TV Show</item>
+    </string-array>
 </resources>

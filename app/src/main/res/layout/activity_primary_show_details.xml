@@ -10,10 +10,10 @@
         android:id="@+id/imageViewPoster"
         android:layout_width="match_parent"
         android:layout_height="150dp"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
+        app:srcCompat="@android:color/background_dark"
         android:layout_alignParentTop="true"
-        app:srcCompat="@android:color/background_dark" />
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -22,16 +22,88 @@
         android:layout_alignParentStart="true"
         android:layout_below="@+id/imageViewPoster">
 
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
             <TextView
                 android:id="@+id/textViewShowTitle"
-                android:layout_width="match_parent"
+                android:layout_width="154dp"
                 android:layout_height="wrap_content"
-                android:text="TextView" />
-        </LinearLayout>
+                android:text="[Title]"
+                android:textSize="18sp"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <TextView
+                android:id="@+id/textViewRuntime"
+                android:layout_width="194dp"
+                android:layout_height="wrap_content"
+                android:text="[Runtime]"
+                android:textSize="18sp"
+                android:gravity="right"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+            <TextView
+                android:id="@+id/textViewOverview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="[Overview]"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignTop="@+id/textViewGenres"
+                android:layout_marginTop="50dp"/>
+
+            <TextView
+                android:id="@+id/textViewRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/textViewShowTitle"
+                android:layout_marginTop="15dp"
+                android:text="[Rating]" />
+
+            <TextView
+                android:id="@+id/textViewGenres"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="[Genres]"
+                android:layout_below="@+id/textViewCountries"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginTop="50dp" />
+
+            <TextView
+                android:id="@+id/textViewCountries"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/textViewRating"
+                android:layout_marginTop="25dp"
+                android:text="On Netflix:" />
+
+            <TextView
+                android:id="@+id/textViewFlagBitmaps"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="[Flag Bitmaps Here]"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_alignTop="@+id/textViewCountries"
+                android:layout_marginTop="25dp"/>
+
+        </RelativeLayout>
     </ScrollView>
+
+
+
 </RelativeLayout>

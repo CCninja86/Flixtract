@@ -28,13 +28,122 @@
         android:layout_alignParentRight="true"
         android:text="Search" />
 
-    <ProgressBar
-        android:id="@+id/progressBarSearch"
-        style="?android:attr/progressBarStyle"
+    <Spinner
+        android:id="@+id/spinnerType"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="27dp"
+        android:layout_below="@+id/editTextSearch"
+        android:layout_toRightOf="@+id/textViewType"
+        android:layout_toEndOf="@+id/textViewType"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp" />
+
+    <TextView
+        android:id="@+id/textViewType"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/btnSearch"
-        android:layout_toLeftOf="@+id/btnSearch"
-        android:layout_toStartOf="@+id/btnSearch"
+        android:layout_alignBottom="@+id/spinnerType"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:text="Show Type*" />
+
+    <TextView
+        android:id="@+id/textViewGenre"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textViewType"
+        android:layout_marginTop="16dp"
+        android:text="Genre*"
         android:visibility="invisible" />
+
+    <Spinner
+        android:id="@+id/spinnerGenre"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@+id/textViewGenre"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_toEndOf="@+id/textViewType"
+        android:layout_toRightOf="@+id/textViewType"
+        android:visibility="invisible" />
+
+    <TextView
+        android:id="@+id/textViewRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textViewGenre"
+        android:layout_marginTop="23dp"
+        android:text="Minimum Rating" />
+
+    <SeekBar
+        android:id="@+id/seekBarRating"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/textViewRating"
+        android:max="10"
+        android:progress="0"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true"
+        android:layout_toRightOf="@+id/textViewRating"
+        android:layout_toEndOf="@+id/textViewRating" />
+
+    <TextView
+        android:id="@+id/textViewRatingNum"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="0"
+        android:layout_below="@+id/seekBarRating"
+        android:layout_toLeftOf="@+id/progressBarSearch"
+        android:layout_toStartOf="@+id/progressBarSearch" />
+
+    <TextView
+        android:id="@+id/textViewReleaseYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textViewRatingNum"
+        android:layout_marginTop="25dp"
+        android:text="Release Year" />
+
+    <EditText
+        android:id="@+id/editTextReleaseYear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignBaseline="@+id/textViewReleaseYear"
+        android:layout_alignBottom="@+id/textViewReleaseYear"
+        android:layout_alignLeft="@+id/seekBarRating"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignStart="@+id/seekBarRating"
+        android:ems="10"
+        android:inputType="number"
+        android:maxLength="4" />
+
+    <CheckBox
+        android:id="@+id/checkBoxNetflix"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="29dp"
+        android:text="Available on Netflix"
+        android:layout_below="@+id/editTextReleaseYear"
+        android:layout_centerHorizontal="true" />
+
+    <com.mikhaellopez.circularprogressbar.CircularProgressBar
+        android:id="@+id/progressBarSearch"
+        android:layout_width="125dp"
+        android:layout_height="125dp"
+        android:layout_alignTop="@+id/checkBoxNetflix"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        app:cpb_background_progressbar_color="#FFCDD2"
+        app:cpb_background_progressbar_width="5dp"
+        app:cpb_progressbar_color="#F44336"
+        app:cpb_progressbar_width="10dp" />
+
 </RelativeLayout>

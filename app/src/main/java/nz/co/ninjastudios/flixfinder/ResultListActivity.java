@@ -54,7 +54,6 @@ public class ResultListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Show show = (Show) listViewResults.getItemAtPosition(position);
-                new TheMovieDBSearchTask(show).execute();
             }
         });
 
@@ -64,60 +63,7 @@ public class ResultListActivity extends AppCompatActivity {
         new GetShowDetailsTask(show).execute();
     }
 
-    private class TheMovieDBSearchTask extends AsyncTask<Void, Void, Void> {
 
-        private Show show;
-        private ArrayList<String> results;
-
-        public TheMovieDBSearchTask(Show show){
-            this.show = show;
-            this.results = new ArrayList<>();
-        }
-
-        @Override
-        protected void onPreExecute(){
-            progressDialog = new ProgressDialog(context);
-            progressDialog.setMessage("Getting Show Details From The Movie DB...");
-            progressDialog.setIndeterminate(true);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            Ion.with(getApplicationContext())
-                    .load("https://api.themoviedb.org/3/search/movie?api_key=" + api_key + "&query=" + show.getTitle())
-                    .asJsonObject()
-                    .setCallback(new FutureCallback<JsonObject>() {
-                        @Override
-                        public void onCompleted(Exception e, JsonObject result) {
-                            JsonArray results = result.get("results").getAsJsonArray();
-                            JsonObject[] resultsArray = gson.fromJson(results, JsonObject[].class);
-
-                            for(JsonObject object : resultsArray){
-                                if(object.get("title").getAsString().equals(show.getTitle())){
-                                    String release_date = object.get("release_date").getAsString();
-                                    int releaseYearAPI = Integer.parseInt(release_date.split("-")[0]);
-
-                                    if(releaseYearAPI == show.getYear()){
-                                        show.setId(object.get("id").getAsInt());
-                                        getShowDetails(show);
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result){
-
-        }
-    }
 
     private class GetShowDetailsTask extends AsyncTask<Void, Void, Void> {
 

@@ -15,6 +15,8 @@ import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import org.jsoup.parser.Parser;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,11 +75,16 @@ public class ListViewAdapter extends BaseAdapter {
 
         String title = items.get(position).getTitle();
         int year = items.get(position).getYear();
+
         if(title != null){
             TextView textView = (TextView) convertView.findViewById(R.id.textViewItem);
 
             if(textView != null){
-                textView.setText(title + " (" + year + ")");
+                if(year != 0){
+                    textView.setText(title + " (" + year + ")");
+                } else {
+                    textView.setText(title + " (N/A)");
+                }
             }
         }
 
