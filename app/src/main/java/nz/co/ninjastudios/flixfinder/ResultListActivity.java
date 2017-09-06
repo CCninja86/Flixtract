@@ -54,6 +54,8 @@ public class ResultListActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Show show = (Show) listViewResults.getItemAtPosition(position);
+                new GetShowDetailsTask(show).execute();
+
             }
         });
 
@@ -70,22 +72,34 @@ public class ResultListActivity extends AppCompatActivity {
         private Show show;
         private Movie movie;
         private TVShow tvShow;
+        private String showType;
 
         public GetShowDetailsTask(Show show){
             this.show = show;
+
+            if(show instanceof Movie){
+                showType = "movie";
+            } else if(show instanceof TVShow){
+                showType = "tv";
+            }
+
             movie = null;
             tvShow = null;
         }
 
         @Override
         protected void onPreExecute(){
-
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.setMessage("Getting Show Details...");
+            progressDialog.show();
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
             Ion.with(context)
-            .load("https://api.themoviedb.org/3/movie/" + show.getId() + "?api_key=" + api_key)
+            .load("https://api.themoviedb.org/3/" + showType + "/" + show.getId() + "?api_key=" + api_key)
             .asJsonObject()
             .setCallback(new FutureCallback<JsonObject>() {
                 @Override
@@ -96,32 +110,66 @@ public class ResultListActivity extends AppCompatActivity {
                         tvShow = (TVShow) show;
                     }
 
-
                     Genre[] genres = gson.fromJson(result.getAsJsonArray("genres"), Genre[].class);
                     String overview = result.get("overview").getAsString();
-                    String poster_path = result.get("poster_path").getAsString();
+                    final String poster_path = result.get("backdrop_path").getAsString();
                     double vote_average = result.get("vote_average").getAsDouble();
                     int vote_count = result.get("vote_count").getAsInt();
-                    boolean adult = result.get("adult").getAsBoolean();
-                    int budget = result.get("budget").getAsInt();
-                    String release_date = result.get("release_date").getAsString();
-                    int revenue = result.get("revenue").getAsInt();
-                    int runtime = result.get("runtime").getAsInt();
-                    String title = result.get("title").getAsString();
-                    String status = result.get("status").getAsString();
 
-                    movie.setGenres(genres);
-                    movie.setOverview(overview);
-                    movie.setPoster_path(poster_path);
-                    movie.setVote_average(vote_average);
-                    movie.setVote_count(vote_count);
-                    movie.setAdult(adult);
-                    movie.setBudget(budget);
-                    movie.setRelease_date(release_date);
-                    movie.setRevenue(revenue);
-                    movie.setRuntime(runtime);
-                    movie.setTitle(title);
-                    movie.setStatus(status);
+                    String title = "";
+                    String status = result.get("status").getAsString();
+                    String release_date = "";
+
+                    boolean adult = false;
+                    int budget = 0;
+                    int revenue = 0;
+                    int runtime = 0;
+
+                    if(movie != null){
+                        adult = result.get("adult").getAsBoolean();
+                        budget = result.get("budget").getAsInt();
+                        revenue = result.get("revenue").getAsInt();
+                        runtime = result.get("runtime").getAsInt();
+                        release_date = result.get("release_date").getAsString();
+                        title = result.get("title").getAsString();
+                    } else if(tvShow != null){
+                        release_date = result.get("first_air_date").getAsString();
+                        title = result.get("name").getAsString();
+                    }
+
+
+
+
+                    if(movie != null){
+                        movie.setGenres(genres);
+                        movie.setOverview(overview);
+                        movie.setPoster_path(poster_path);
+                        movie.setVote_average(vote_average);
+                        movie.setVote_count(vote_count);
+                        movie.setAdult(adult);
+                        movie.setBudget(budget);
+                        movie.setRelease_date(release_date);
+                        movie.setRevenue(revenue);
+                        movie.setRuntime(runtime);
+                        movie.setTitle(title);
+                        movie.setStatus(status);
+                    } else if(tvShow != null){
+                        tvShow.setGenres(genres);
+                        tvShow.setOverview(overview);
+                        tvShow.setPoster_path(poster_path);
+                        tvShow.setVote_average(vote_average);
+                        tvShow.setVote_count(vote_count);
+                        tvShow.setRelease_date(release_date);
+                        tvShow.setTitle(title);
+                        tvShow.setStatus(status);
+                    }
+
+
+                    if(movie != null){
+                        loadDetailsFragment(movie);
+                    } else if(tvShow != null){
+                        loadDetailsFragment(tvShow);
+                    }
 
                 }
             });
@@ -132,7 +180,16 @@ public class ResultListActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result){
-
+            if(progressDialog != null && progressDialog.isShowing()){
+                progressDialog.dismiss();
+                progressDialog = null;
+            }
         }
+    }
+
+    private void loadDetailsFragment(Show show){
+        Intent intent = new Intent(getApplicationContext(), PrimaryShowDetailsActivity.class);
+        intent.putExtra("show", show);
+        startActivity(intent);
     }
 }

@@ -46,6 +46,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.ListIterator;
@@ -56,6 +57,7 @@ import java.util.regex.Pattern;
 public class MainActivity extends AppCompatActivity {
 
     private CircularProgressBar progressBar;
+    private CircularProgressBar progressBarPages;
     private EditText editText;
     private ProgressDialog progressDialog;
     private String api_key = "5549383f29245415046c05c039ef2009";
@@ -124,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnSearch = (Button) findViewById(R.id.btnSearch);
         progressBar = (CircularProgressBar) findViewById(R.id.progressBarSearch);
+        progressBarPages = (CircularProgressBar) findViewById(R.id.progressBarPageScan);
         editText = (EditText) findViewById(R.id.editTextSearch);
 
         btnSearch.setOnClickListener(new View.OnClickListener() {
@@ -163,7 +166,11 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPreExecute(){
-
+            progressDialog = new ProgressDialog(context);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCancelable(false);
+            progressDialog.setMessage("Getting Genres...");
+            progressDialog.show();
         }
 
         @Override
@@ -189,7 +196,10 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result){
-
+            if(progressDialog != null && progressDialog.isShowing()){
+                progressDialog.dismiss();
+                progressDialog = null;
+            }
         }
     }
 
@@ -385,86 +395,153 @@ public class MainActivity extends AppCompatActivity {
 
                 if(show.getTitle().contains(" ")){
                     String tempTitle = show.getTitle();
-                    urlEncodedTitle = tempTitle.replaceAll(" ", "-").replaceAll("[\\W+]", "");
+                    urlEncodedTitle = tempTitle.replaceAll(" ", "-").toLowerCase();
                     tempTitle = null;
                 } else {
-                    urlEncodedTitle = show.getTitle();
+                    urlEncodedTitle = show.getTitle().toLowerCase();
                 }
 
-                String urlString = "http://flixsearch.io/search/" + urlEncodedTitle;
-                Document document = null;
+                boolean endOfPages = false;
+                boolean wasRedirected = false;
+                String urlString = "http://flixsearch.io/search/" + urlEncodedTitle + "?page=1";
 
+                // Check if url redirects (invalid show title), otherwise proceed with scanning each page
                 try {
-                    document = Jsoup.connect(urlString).get();
+                    URL url = new URL(urlString);
+                    HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection.setInstanceFollowRedirects(false);
+                    urlConnection.connect();
+
+                    int responseCode = urlConnection.getResponseCode();
+
+                    if(responseCode == 301 || responseCode == 302 || responseCode == 303){
+                        wasRedirected = true;
+                    }
                 } catch (MalformedURLException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                if(document != null){
-                    Elements showCards = document.getElementsByClass("card movie-card text-xs-center");
+                int page = 1;
 
-                    String showTitle = "";
-                    int year = 0;
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        progressBarPages.setProgressWithAnimation((float) 0, 1000);
+                    }
+                });
 
-                    for(Element showCard : showCards){
-                        ArrayList<Country> countries = new ArrayList<>();
-                        Elements titleElement = showCard.getElementsByTag("a");
-                        Elements availableCountries = showCard.children().get(1).children();
+                while(!endOfPages && !wasRedirected){
+                    urlString = "http://flixsearch.io/search/" + urlEncodedTitle + "?page=" + page;
+                    System.out.println("Page " + page);
+                    Document document = null;
 
-                        for(Element availCountry : availableCountries){
-                            if(!availCountry.hasClass("fa fa-plus")){
-                                Element flagElement = availCountry.child(0);
-                                Country country = new Country();
+                    if(!wasRedirected){
+                        try {
+                            document = Jsoup.connect(urlString).get();
+                        } catch (MalformedURLException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
 
-                                if(flagElement.hasAttr("title")){
-                                    country.setName(flagElement.attr("title"));
-                                }
+                        if(document != null){
+                            Elements elementNoResult = document.select("strong:contains(No results)");
+                            Elements elementPagination = document.select("ul.pagination");
+                            Elements paginationTabs = null;
 
-                                if(flagElement.hasAttr("src")){
-                                    country.setFlagImageUrl("http://flixsearch.io" + flagElement.attr("src"));
-                                }
+                            if(elementPagination.size() > 0){
+                                paginationTabs = elementPagination.get(0).children();
+                            }
 
-                                countries.add(country);
-                            } else {
-                                if(availCountry.hasAttr("title")){
-                                    String[] countryList = availCountry.attr("title").split(", ");
+                            int totalPages = 1;
 
-                                    for(String countryName : countryList){
-                                        Country country = new Country();
-                                        country.setName(countryName);
-                                        country.setFlagImageUrl(null);
-                                        countries.add(country);
+                            if(paginationTabs != null){
+                                totalPages = Integer.parseInt(paginationTabs.get(paginationTabs.size() - 2).text());
+                            }
+
+                            endOfPages = elementNoResult.size() > 0 && elementPagination.size() == 0;
+
+                            if(!endOfPages){
+                                final int finalPage = page;
+                                final int finalTotalPages = totalPages;
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        progressBarPages.setProgressWithAnimation((100/(float) finalTotalPages) * (float) finalPage, 1000);
                                     }
+                                });
+
+                                Elements showCards = document.getElementsByClass("card movie-card text-xs-center");
+
+                                String showTitle = "";
+                                int year = 0;
+
+                                for(Element showCard : showCards){
+                                    ArrayList<Country> countries = new ArrayList<>();
+                                    Elements titleElement = showCard.getElementsByTag("a");
+                                    Elements availableCountries = showCard.children().get(1).children();
+
+                                    for(Element availCountry : availableCountries){
+                                        if(!availCountry.hasClass("fa fa-plus")){
+                                            Element flagElement = availCountry.child(0);
+                                            Country country = new Country();
+
+                                            if(flagElement.hasAttr("title")){
+                                                country.setName(flagElement.attr("title"));
+                                            }
+
+                                            if(flagElement.hasAttr("src")){
+                                                country.setFlagImageUrl("http://flixsearch.io" + flagElement.attr("src"));
+                                            }
+
+                                            countries.add(country);
+                                        } else {
+                                            if(availCountry.hasAttr("title")){
+                                                String[] countryList = availCountry.attr("title").split(", ");
+
+                                                for(String countryName : countryList){
+                                                    Country country = new Country();
+                                                    country.setName(countryName);
+                                                    country.setFlagImageUrl(null);
+                                                    countries.add(country);
+                                                }
+                                            }
+                                        }
+
+                                    }
+
+                                    show.setCountries(countries);
+
+                                    if(titleElement.hasAttr("title")){
+                                        showTitle = titleElement.attr("title");
+                                    }
+
+                                    if(titleElement.hasAttr("href")){
+                                        String detailsUrl = titleElement.attr("href");
+                                        Pattern pattern = Pattern.compile("\\b\\d{4}\\b");
+                                        Matcher matcher = pattern.matcher(detailsUrl);
+
+                                        if(matcher.find()){
+                                            year = Integer.parseInt(matcher.group(0));
+                                        }
+                                    }
+
+                                    if(showTitle.equals(show.getTitle()) && show.getYear() == year){
+                                        show.setOnNetflix(true);
+                                    }
+
                                 }
                             }
 
+
                         }
-
-                        show.setCountries(countries);
-
-                        if(titleElement.hasAttr("title")){
-                            showTitle = titleElement.attr("title");
-                        }
-
-                        if(titleElement.hasAttr("href")){
-                            String detailsUrl = titleElement.attr("href");
-                            Pattern pattern = Pattern.compile("\\b\\d{4}\\b");
-                            Matcher matcher = pattern.matcher(detailsUrl);
-
-                            if(matcher.find()){
-                                year = Integer.parseInt(matcher.group(0));
-                            }
-                        }
-
-                        if(showTitle.equals(show.getTitle()) && show.getYear() == year){
-                            show.setOnNetflix(true);
-                        }
-
                     }
 
 
+
+                    page++;
                 }
 
                 if(!show.isOnNetflix()){
@@ -472,8 +549,12 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
+
+
                 count++;
             }
+
+
 
             return null;
         }
@@ -493,4 +574,17 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra("shows", shows);
         startActivity(intent);
     }
+
+    private boolean isValidString(String string){
+        string = string.replaceAll("[^a-zA-Z0-9-]", "");
+        Pattern pattern = Pattern.compile("[a-zA-Z0-9-]");
+        Matcher matcher = pattern.matcher(string);
+
+        return matcher.find();
+    }
+
+    private String urlEncode(String string){
+        return string.replaceAll(" ", "-");
+    }
+
 }

@@ -135,15 +135,27 @@
         android:layout_centerHorizontal="true" />
 
     <com.mikhaellopez.circularprogressbar.CircularProgressBar
-        android:id="@+id/progressBarSearch"
-        android:layout_width="125dp"
-        android:layout_height="125dp"
-        android:layout_alignTop="@+id/checkBoxNetflix"
+    android:id="@+id/progressBarSearch"
+    android:layout_width="125dp"
+    android:layout_height="125dp"
+    android:layout_alignTop="@+id/checkBoxNetflix"
+    android:layout_centerHorizontal="true"
+    android:layout_marginTop="50dp"
+    app:cpb_background_progressbar_color="#FFCDD2"
+    app:cpb_background_progressbar_width="5dp"
+    app:cpb_progressbar_color="#F44336"
+    app:cpb_progressbar_width="10dp" />
+
+    <com.mikhaellopez.circularprogressbar.CircularProgressBar
+        android:id="@+id/progressBarPageScan"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignTop="@+id/progressBarSearch"
+        android:layout_marginTop="12dp"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="50dp"
         app:cpb_background_progressbar_color="#FFCDD2"
         app:cpb_background_progressbar_width="5dp"
         app:cpb_progressbar_color="#F44336"
-        app:cpb_progressbar_width="10dp" />
+        app:cpb_progressbar_width="10dp"/>
 
 </RelativeLayout>
