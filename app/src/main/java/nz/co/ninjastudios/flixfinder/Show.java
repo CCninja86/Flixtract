@@ -1,5 +1,7 @@
 package nz.co.ninjastudios.flixfinder;
 
+import android.graphics.Bitmap;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 

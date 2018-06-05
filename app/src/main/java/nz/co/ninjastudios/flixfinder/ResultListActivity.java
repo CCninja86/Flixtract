@@ -4,12 +4,23 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.OrientationHelper;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.view.LayoutInflater;
+import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -19,6 +30,9 @@ import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.async.http.body.JSONObjectBody;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.builder.Builders;
+import com.paginate.Paginate;
+import com.paginate.recycler.LoadingListItemCreator;
+import com.paginate.recycler.LoadingListItemSpanLookup;
 
 import org.json.JSONObject;
 
@@ -27,45 +41,50 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-public class ResultListActivity extends AppCompatActivity {
+import static android.renderscript.Sampler.Value.LINEAR;
+import static android.widget.GridLayout.VERTICAL;
+import static android.widget.LinearLayout.HORIZONTAL;
+
+public class ResultListActivity extends AppCompatActivity{
 
     private ProgressDialog progressDialog;
     private String api_key = "5549383f29245415046c05c039ef2009";
     private Gson gson;
     private Context context;
 
+    private RecyclerView recyclerViewResults;
+    private ShowsAdapter adapter;
+
+    private boolean loading = false;
+    private int page = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_result_list);
 
+        LayoutInflater.from(this).inflate(R.layout.recycler_layout, (ViewGroup) findViewById(android.R.id.content), true);
+
+
         gson = new Gson();
         context = this;
 
-        final ListView listViewResults = (ListView) findViewById(R.id.listResults);
-
         Intent intent = getIntent();
-        ArrayList<Show> results = (ArrayList<Show>) intent.getSerializableExtra("shows");
+        ArrayList<Show> showResults = (ArrayList<Show>) intent.getSerializableExtra("shows");
 
-        final ListViewAdapter listViewAdapter = new ListViewAdapter(this, results, R.layout.row);
-        listViewResults.setAdapter(listViewAdapter);
+        recyclerViewResults = findViewById(R.id.recyclerViewResults);
+        adapter = new ShowsAdapter(this, showResults);
 
-        listViewResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Show show = (Show) listViewResults.getItemAtPosition(position);
-                new GetShowDetailsTask(show).execute();
-
-            }
-        });
+        RecyclerView.LayoutManager layoutManager = new GridLayoutManager(this, 2);
+        recyclerViewResults.setLayoutManager(layoutManager);
+        recyclerViewResults.setItemAnimator(new DefaultItemAnimator());
+        recyclerViewResults.setAdapter(adapter);
 
     }
 
     private void getShowDetails(Show show){
         new GetShowDetailsTask(show).execute();
     }
-
-
 
     private class GetShowDetailsTask extends AsyncTask<Void, Void, Void> {
 

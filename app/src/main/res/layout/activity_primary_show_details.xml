@@ -13,8 +13,7 @@
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:scaleType="fitXY"
-        app:srcCompat="@android:color/background_dark" />
+        android:scaleType="fitXY" />
 
     <ScrollView
         android:layout_width="match_parent"
